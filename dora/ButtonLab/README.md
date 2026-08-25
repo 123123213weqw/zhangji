@@ -22,13 +22,18 @@ actions:
 ## Run locally
 
 ```bash
-./dora-lab start
-./dora-lab buildrun
+./dora-lab
 ```
 
-The first command starts Dora SSR and opens `http://localhost:8866/`. Keep that
-Web IDE tab open: Dora's TypeScript compiler is provided by the Web IDE. The
-wrapper installs the project API definitions on first build.
+The default command starts the checked-in Lua runtime directly, so normal use
+does not need the Web IDE. After editing TypeScript/TSX, rebuild with:
+
+```bash
+./dora-lab dev
+```
+
+The `dev` command opens and waits for Dora's local compiler when needed,
+installs API definitions on first use, builds, and runs ButtonLab.
 
 The window uses the handheld's logical `640x480` resolution on desktop. Verify:
 

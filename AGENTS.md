@@ -56,11 +56,11 @@ python3 -m unittest discover -s tests -v
 Use the repository wrapper rather than invoking compiler internals directly:
 
 ```bash
-./dora-lab start
-./dora-lab buildrun
-./dora-lab log
+./dora-lab dev
 ```
 
-Keep the local Dora Web IDE open during TypeScript compilation. The simulation
-project is `dora/ButtonLab`; both the on-screen `GamePad` and desktop keyboard
-must feed the shared `InputManager` actions used by the physical R36S pad.
+Users run the prebuilt simulator with `./dora-lab`; no Web IDE is required for
+that path. The `dev` command automatically starts Dora, connects its compiler,
+installs missing definitions, builds, and runs. The simulation project is `dora/ButtonLab`;
+both the on-screen `GamePad` and desktop keyboard must feed the shared
+`InputManager` actions used by the physical R36S pad.

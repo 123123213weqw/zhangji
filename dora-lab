@@ -8,12 +8,13 @@ IDE_URL=${DORA_IDE_URL:-http://localhost:8866/}
 
 usage() {
 	cat <<'EOF'
-Usage: ./dora-lab <start|install|build|run|buildrun|status|log|stop>
+Usage: ./dora-lab [dev|start|install|build|run|buildrun|status|log|stop]
 
-  start     Start Dora SSR and open its local Web IDE
+  dev       Rebuild TypeScript and run (for Coding Agents)
+  start     Start the Dora SSR engine
   install   Install the TypeScript API definitions for ButtonLab
   build     Compile ButtonLab TypeScript/TSX to Lua
-  run       Run the already-built ButtonLab
+  run       Run the already-built ButtonLab (default)
   buildrun  Install definitions if needed, then build and run
   status    Show the Dora engine/Web IDE/project status
   log       Show recent Dora logs
@@ -30,18 +31,24 @@ require_dora() {
 
 open_url() {
 	case "$(uname -s)" in
-		Darwin) open "$1" >/dev/null 2>&1 ;;
+		Darwin) open -g "$1" >/dev/null 2>&1 ;;
 		Linux) command -v xdg-open >/dev/null 2>&1 && xdg-open "$1" >/dev/null 2>&1 || true ;;
 	esac
 }
 
-start_dora() {
-	case "$(uname -s)" in
-		Darwin) open -a Dora >/dev/null 2>&1 ;;
-	esac
+engine_ready() {
+	Dora cli status --host "$HOST" 2>/dev/null | grep -q "Native engine: yes"
+}
+
+start_engine() {
+	if ! engine_ready; then
+		case "$(uname -s)" in
+			Darwin) open -a Dora >/dev/null 2>&1 ;;
+		esac
+	fi
 
 	i=0
-	while ! Dora cli status --host "$HOST" >/dev/null 2>&1; do
+	while ! engine_ready; do
 		i=$((i + 1))
 		if [ "$i" -ge 30 ]; then
 			echo "Dora SSR did not become ready at $HOST:8866." >&2
@@ -49,26 +56,37 @@ start_dora() {
 		fi
 		sleep 0.2
 	done
-	open_url "$IDE_URL"
-	echo "Dora SSR is ready. Keep the Web IDE tab open while compiling."
-	Dora cli status --host "$HOST"
+	echo "Dora SSR is ready."
+}
+
+start_compiler() {
+	start_engine
+
+	# Give a previously opened IDE tab a moment to reconnect before opening one.
+	i=0
+	while ! Dora cli status --host "$HOST" 2>/dev/null | grep -q "Web IDE connected: yes"; do
+		i=$((i + 1))
+		[ "$i" -ge 10 ] && break
+		sleep 0.2
+	done
+	if ! Dora cli status --host "$HOST" 2>/dev/null | grep -q "Web IDE connected: yes"; then
+		# A unique query forces an existing stale IDE tab to reconnect its socket.
+		open_url "${IDE_URL}?connect=$(date +%s)"
+		i=0
+		while ! Dora cli status --host "$HOST" 2>/dev/null | grep -q "Web IDE connected: yes"; do
+			i=$((i + 1))
+			if [ "$i" -ge 75 ]; then
+				echo "Dora Web IDE did not connect at $IDE_URL." >&2
+				exit 1
+			fi
+			sleep 0.2
+		done
+	fi
+	echo "Dora TypeScript compiler is ready."
 }
 
 install_api() {
 	Dora cli ts install -p "$PROJECT" -l en --host "$HOST"
-}
-
-require_web_ide() {
-	status=$(Dora cli status --host "$HOST" 2>&1) || {
-		echo "$status" >&2
-		echo "Run ./dora-lab start first." >&2
-		exit 1
-	}
-	echo "$status" | grep -q "Web IDE connected: yes" || {
-		echo "$status" >&2
-		echo "Open $IDE_URL and keep the tab connected, then retry." >&2
-		exit 1
-	}
 }
 
 build_project() {
@@ -89,20 +107,43 @@ build_project() {
 require_dora
 command=${1:-}
 case "$command" in
+	dev)
+		start_compiler
+		[ -f "$PROJECT/API/Dora.d.ts" ] || install_api
+		build_project
+		Dora cli run -p "$PROJECT" --host "$HOST"
+		sleep 0.5
+		if Dora cli log -n 40 --host "$HOST" | grep -q "BUTTON_LAB_SELF_TEST_OK"; then
+			echo "ButtonLab is ready: keyboard, virtual pad, and controller share one input pipeline."
+		fi
+		;;
 	start)
-		start_dora
+		start_engine
 		;;
 	install)
 		install_api
 		;;
-	build|buildrun)
+	build)
+		start_compiler
 		[ -f "$PROJECT/API/Dora.d.ts" ] || install_api
-		require_web_ide
 		build_project
-		[ "$command" = build ] || Dora cli run -p "$PROJECT" --host "$HOST"
 		;;
-	run)
+	buildrun)
+		start_compiler
+		[ -f "$PROJECT/API/Dora.d.ts" ] || install_api
+		build_project
 		Dora cli run -p "$PROJECT" --host "$HOST"
+		;;
+	run|"")
+		start_engine
+		if [ ! -f "$PROJECT/init.lua" ]; then
+			echo "ButtonLab runtime is missing; rebuilding it once." >&2
+			start_compiler
+			[ -f "$PROJECT/API/Dora.d.ts" ] || install_api
+			build_project
+		fi
+		Dora cli run -p "$PROJECT" --host "$HOST"
+		echo "ButtonLab is ready. Use ./dora-lab dev only after editing its source."
 		;;
 	status)
 		Dora cli status --host "$HOST"
@@ -113,7 +154,7 @@ case "$command" in
 	stop)
 		Dora cli stop --host "$HOST"
 		;;
-	-h|--help|help|"")
+	-h|--help|help)
 		usage
 		;;
 	*)

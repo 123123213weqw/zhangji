@@ -7,5 +7,3 @@ __pycache__/
 
 # Dora SSR local SDK definitions and TypeScript build products.
 dora/ButtonLab/API/
-dora/ButtonLab/init.lua
-dora/ButtonLab/Script/*.lua

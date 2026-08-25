@@ -45,10 +45,13 @@
 同一组游戏 Action：电脑键盘、屏幕虚拟手柄、R36S 物理按键。
 
 ```bash
-./dora-lab start
-./dora-lab buildrun
-./dora-lab log | grep BUTTON_LAB_SELF_TEST_OK
+./dora-lab
 ```
+
+这一条命令会自动启动 Dora，直接运行仓库内已经构建好的模拟器，不需要打开
+Web IDE。Coding Agent 修改
+源码后使用 `./dora-lab dev` 自动重新编译。需要排错时再使用
+`./dora-lab status` 或 `./dora-lab log`。
 
 实现位于 `dora/ButtonLab/`。虚拟按钮直接调用 Dora `InputManager` 的
 `emitButtonDown` / `emitButtonUp` / `emitAxis`，因此不是图片演示，而是会
