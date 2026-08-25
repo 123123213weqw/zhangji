@@ -67,6 +67,18 @@ Web IDE。Coding Agent 修改
 再单独增加 R36S 输入与 640×480 UI 适配。只有电脑版本验证通过或明确要求
 时，才进入掌机适配和真机检查。
 
+也可以把它安装成 Codex 的正式 Skill。在 Codex 中输入：
+
+```text
+$skill-installer install https://github.com/123123213weqw/zhangji/tree/main/skills/dora-handheld-dev
+```
+
+下一次任务即可直接调用：
+
+```text
+$dora-handheld-dev 先完成这个游戏的原生电脑版本，完成后再适配 R36S
+```
+
 其他 Dora 项目不必复制脚本，通过环境变量指定目录即可：
 
 ```bash
