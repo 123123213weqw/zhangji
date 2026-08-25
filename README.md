@@ -39,6 +39,21 @@
 `AGENTS.md` 会要求 Agent 先运行 `./handheld status --json`，再通过统一 CLI
 操作掌机。
 
+## Dora 掌机按钮模拟
+
+仓库包含一个 `640x480` 的 Dora SSR 按钮实验环境。它把三种输入统一为
+同一组游戏 Action：电脑键盘、屏幕虚拟手柄、R36S 物理按键。
+
+```bash
+./dora-lab start
+./dora-lab buildrun
+./dora-lab log | grep BUTTON_LAB_SELF_TEST_OK
+```
+
+实现位于 `dora/ButtonLab/`。虚拟按钮直接调用 Dora `InputManager` 的
+`emitButtonDown` / `emitButtonUp` / `emitAxis`，因此不是图片演示，而是会
+真正进入游戏输入管线的按钮模拟器。
+
 ## 配置
 
 设备配置位于 `config/handheld.json`：

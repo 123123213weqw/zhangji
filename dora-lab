@@ -1,0 +1,124 @@
+#!/bin/sh
+set -eu
+
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+PROJECT="$ROOT/dora/ButtonLab"
+HOST=${DORA_HOST:-127.0.0.1}
+IDE_URL=${DORA_IDE_URL:-http://localhost:8866/}
+
+usage() {
+	cat <<'EOF'
+Usage: ./dora-lab <start|install|build|run|buildrun|status|log|stop>
+
+  start     Start Dora SSR and open its local Web IDE
+  install   Install the TypeScript API definitions for ButtonLab
+  build     Compile ButtonLab TypeScript/TSX to Lua
+  run       Run the already-built ButtonLab
+  buildrun  Install definitions if needed, then build and run
+  status    Show the Dora engine/Web IDE/project status
+  log       Show recent Dora logs
+  stop      Stop the running Dora project
+EOF
+}
+
+require_dora() {
+	if ! command -v Dora >/dev/null 2>&1; then
+		echo "Dora CLI was not found. Install Dora SSR 1.9.2+ and add Dora to PATH." >&2
+		exit 127
+	fi
+}
+
+open_url() {
+	case "$(uname -s)" in
+		Darwin) open "$1" >/dev/null 2>&1 ;;
+		Linux) command -v xdg-open >/dev/null 2>&1 && xdg-open "$1" >/dev/null 2>&1 || true ;;
+	esac
+}
+
+start_dora() {
+	case "$(uname -s)" in
+		Darwin) open -a Dora >/dev/null 2>&1 ;;
+	esac
+
+	i=0
+	while ! Dora cli status --host "$HOST" >/dev/null 2>&1; do
+		i=$((i + 1))
+		if [ "$i" -ge 30 ]; then
+			echo "Dora SSR did not become ready at $HOST:8866." >&2
+			exit 1
+		fi
+		sleep 0.2
+	done
+	open_url "$IDE_URL"
+	echo "Dora SSR is ready. Keep the Web IDE tab open while compiling."
+	Dora cli status --host "$HOST"
+}
+
+install_api() {
+	Dora cli ts install -p "$PROJECT" -l en --host "$HOST"
+}
+
+require_web_ide() {
+	status=$(Dora cli status --host "$HOST" 2>&1) || {
+		echo "$status" >&2
+		echo "Run ./dora-lab start first." >&2
+		exit 1
+	}
+	echo "$status" | grep -q "Web IDE connected: yes" || {
+		echo "$status" >&2
+		echo "Open $IDE_URL and keep the tab connected, then retry." >&2
+		exit 1
+	}
+}
+
+build_project() {
+	output=$(Dora cli build -p "$PROJECT" --host "$HOST" 2>&1) || {
+		printf '%s\n' "$output" >&2
+		exit 1
+	}
+	printf '%s\n' "$output"
+	if printf '%s\n' "$output" | grep -q '^\[error\]'; then
+		exit 1
+	fi
+	if [ ! -f "$PROJECT/init.lua" ]; then
+		echo "Dora did not generate $PROJECT/init.lua." >&2
+		exit 1
+	fi
+}
+
+require_dora
+command=${1:-}
+case "$command" in
+	start)
+		start_dora
+		;;
+	install)
+		install_api
+		;;
+	build|buildrun)
+		[ -f "$PROJECT/API/Dora.d.ts" ] || install_api
+		require_web_ide
+		build_project
+		[ "$command" = build ] || Dora cli run -p "$PROJECT" --host "$HOST"
+		;;
+	run)
+		Dora cli run -p "$PROJECT" --host "$HOST"
+		;;
+	status)
+		Dora cli status --host "$HOST"
+		;;
+	log)
+		Dora cli log -n "${DORA_LOG_LINES:-100}" --host "$HOST"
+		;;
+	stop)
+		Dora cli stop --host "$HOST"
+		;;
+	-h|--help|help|"")
+		usage
+		;;
+	*)
+		echo "Unknown command: $command" >&2
+		usage >&2
+		exit 2
+		;;
+esac

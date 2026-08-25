@@ -50,3 +50,17 @@ python3 -m unittest discover -s tests -v
 ./handheld status --json
 ./handheld exec -- uname -a
 ```
+
+## Dora button simulation
+
+Use the repository wrapper rather than invoking compiler internals directly:
+
+```bash
+./dora-lab start
+./dora-lab buildrun
+./dora-lab log
+```
+
+Keep the local Dora Web IDE open during TypeScript compilation. The simulation
+project is `dora/ButtonLab`; both the on-screen `GamePad` and desktop keyboard
+must feed the shared `InputManager` actions used by the physical R36S pad.
