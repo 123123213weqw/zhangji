@@ -35,6 +35,9 @@ does not need the Web IDE. After editing TypeScript/TSX, rebuild with:
 The `dev` command opens and waits for Dora's local compiler when needed,
 installs API definitions on first use, builds, and runs ButtonLab.
 
+Game projects should reuse `Script/Input.ts` and listen to its Action names;
+they should not translate keyboard keys separately inside gameplay code.
+
 The window uses the handheld's logical `640x480` resolution on desktop. Verify:
 
 ```bash

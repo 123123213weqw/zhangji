@@ -6,8 +6,10 @@ import { CreateManager, Trigger } from "InputManager";
  * The R36S SDL mapping and the desktop virtual pad both produce these names,
  * so game code never needs to know Linux js0 button numbers.
  */
+export const INPUT_CONTEXT = "Game";
+
 export const inputManager = CreateManager({
-	Lab: {
+	[INPUT_CONTEXT]: {
 		Up: Trigger.Down([
 			{ key: KeyName.Up },
 			{ button: ButtonName.Up },

@@ -36,6 +36,12 @@ Keyboard, the on-screen `GamePad`, and the R36S controller may be used together.
 Keep the competition mapping visible with `./dora-lab keys`; do not create a
 separate keyboard-only gameplay implementation.
 
+For a new project or any input-related change, read
+[references/input-mapping.md](references/input-mapping.md). It defines the
+Action names, keyboard-to-handheld conversion, required adapter module, and
+copy-ready listener pattern. Ensure the project has that adapter before calling
+its input support complete.
+
 ## Move to the handheld
 
 Do this when the user requests a device check or after the desktop build is

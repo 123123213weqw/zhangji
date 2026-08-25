@@ -13,6 +13,7 @@ local toNode = ____DoraX.toNode -- 13
 local ____InputManager = require("InputManager") -- 14
 local GamePad = ____InputManager.GamePad -- 14
 local ____Input = require("Script.Input") -- 15
+local INPUT_CONTEXT = ____Input.INPUT_CONTEXT -- 15
 local inputManager = ____Input.inputManager -- 15
 local installKeyboardAxes = ____Input.installKeyboardAxes -- 15
 if App.platform == "macOS" or App.platform == "Windows" then -- 15
@@ -88,7 +89,7 @@ inputNode:onKeyUp(function(keyName) -- 76
 	record("key up " .. keyName) -- 77
 end) -- 76
 installKeyboardAxes() -- 80
-inputManager:pushContext("Lab") -- 81
+inputManager:pushContext(INPUT_CONTEXT) -- 81
 local ____opt_0 = toNode(React.createElement(GamePad, {inputManager = inputManager, color = 4285125375, primaryOpacity = 0.58, secondaryOpacity = 0.28})) -- 81
 if ____opt_0 ~= nil then -- 81
 	____opt_0:addTo(Director.ui) -- 83

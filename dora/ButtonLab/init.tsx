@@ -12,7 +12,7 @@ import {
 } from "Dora";
 import { React, toNode } from "DoraX";
 import { GamePad } from "InputManager";
-import { inputManager, installKeyboardAxes } from "Script/Input";
+import { INPUT_CONTEXT, inputManager, installKeyboardAxes } from "Script/Input";
 
 if (App.platform === PlatformType.macOS || App.platform === PlatformType.Windows) {
 	App.fullScreen = false;
@@ -78,7 +78,7 @@ inputNode.onKeyUp((keyName) => {
 });
 
 installKeyboardAxes();
-inputManager.pushContext("Lab");
+inputManager.pushContext(INPUT_CONTEXT);
 
 toNode(
 	<GamePad
