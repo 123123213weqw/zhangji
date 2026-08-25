@@ -1,8 +1,31 @@
-# R36S Dora AI Development Bridge
+# R36S Dora AI Game Development
 
 AI-first repository for developing a native desktop Dora SSR game and adapting
-the finished game to an R36S handheld. It contains no sample game and does not
-force handheld controls during desktop development.
+the finished game to an R36S handheld. The included game, **STARFALL / 星坠拾荒者**,
+is a complete example produced with the repository Skill. It keeps PC and R36S
+input providers separate instead of forcing handheld controls during desktop
+development.
+
+## Play the included game
+
+Native desktop version:
+
+```bash
+DORA_PROJECT="$PWD/games/Starfall" ./dora-lab dev
+```
+
+Handheld profile / local virtual-controller preview:
+
+```bash
+DORA_PROJECT="$PWD/games/Starfall" \
+DORA_ENTRY=handheld.lua \
+./dora-lab dev
+```
+
+Desktop controls are `WASD`/arrows to move, mouse to aim, click/`Space` to
+dash, `P` to pause, and `R` to restart. See
+[`games/Starfall/README.md`](games/Starfall/README.md) for the R36S mapping and
+source map.
 
 ## AI coding agent: read this first
 
@@ -56,6 +79,9 @@ DORA_PROJECT=/absolute/path/to/project ./dora-lab run
 ./dora-lab stop
 ```
 
+`DORA_ENTRY` selects an alternate compiled entry, such as `handheld.lua`; it
+defaults to `init.lua`.
+
 When the current directory is itself a Dora project, `DORA_PROJECT` may be
 omitted.
 
@@ -95,8 +121,10 @@ AGENTS.md                         repository instructions for coding agents
 dora-lab                         generic Dora project build/run/log wrapper
 handheld                         stable R36S discovery/SSH/transfer entrypoint
 config/handheld.json             non-secret device identity
+games/Starfall/                  playable desktop + R36S Dora game
 tools/handheld.py                connection implementation
 tests/test_handheld.py           connection parser tests
+tests/test_starfall.py           game profile/package checks
 skills/dora-handheld-dev/        installable desktop-first adaptation Skill
 ```
 
@@ -104,5 +132,7 @@ skills/dora-handheld-dev/        installable desktop-first adaptation Skill
 
 ```bash
 python3 -m unittest discover -s tests -v
+DORA_PROJECT="$PWD/games/Starfall" ./dora-lab build
+DORA_PROJECT="$PWD/games/Starfall" DORA_ENTRY=handheld.lua ./dora-lab run
 ./handheld status --json
 ```

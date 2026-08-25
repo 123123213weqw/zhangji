@@ -46,6 +46,15 @@ the desktop provider intact, and add a separate R36S input/UI profile. The
 on-screen `GamePad` is an adaptation test tool and must not become the desktop
 game's primary interface.
 
+Prefer separate entry files when target setup differs. Keep `init.ts`/`init.lua`
+as the native desktop entry and compile a second entry such as
+`handheld.ts`/`handheld.lua`. Run that profile without rewriting the desktop
+entry:
+
+```bash
+DORA_PROJECT=/absolute/path/to/project DORA_ENTRY=handheld.lua ./dora-lab dev
+```
+
 ## Move to the handheld
 
 Do this when the user requests a device check or after the desktop build is

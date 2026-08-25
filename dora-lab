@@ -3,12 +3,13 @@ set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 PROJECT=${DORA_PROJECT:-}
+ENTRY=${DORA_ENTRY:-init.lua}
 HOST=${DORA_HOST:-127.0.0.1}
 IDE_URL=${DORA_IDE_URL:-http://localhost:8866/}
 
 usage() {
 	cat <<'EOF'
-Usage: DORA_PROJECT=/absolute/project ./dora-lab [dev|start|install|build|run|buildrun|status|log|stop]
+Usage: DORA_PROJECT=/absolute/project [DORA_ENTRY=init.lua] ./dora-lab [dev|start|install|build|run|buildrun|status|log|stop]
 
   dev       Rebuild TypeScript and run (for Coding Agents)
   start     Start the Dora SSR engine
@@ -114,8 +115,8 @@ build_project() {
 	if printf '%s\n' "$output" | grep -q '^\[error\]'; then
 		exit 1
 	fi
-	if [ ! -f "$PROJECT/init.lua" ]; then
-		echo "Dora did not generate $PROJECT/init.lua." >&2
+	if [ ! -f "$PROJECT/$ENTRY" ]; then
+		echo "Dora did not generate $PROJECT/$ENTRY." >&2
 		exit 1
 	fi
 }
@@ -128,9 +129,9 @@ case "$command" in
 		start_compiler
 		[ -f "$PROJECT/API/Dora.d.ts" ] || install_api
 		build_project
-		Dora cli run -p "$PROJECT" --host "$HOST"
+		Dora cli run -p "$PROJECT" --entry "$ENTRY" --host "$HOST"
 		sleep 0.5
-		if Dora cli log -n 40 --host "$HOST" | grep -q "BUTTON_LAB_SELF_TEST_OK"; then
+		if Dora cli log -n 40 --host "$HOST" | grep -q "SELF_TEST_OK"; then
 			echo "Dora project is built and running: $PROJECT"
 		fi
 		;;
@@ -152,18 +153,18 @@ case "$command" in
 		start_compiler
 		[ -f "$PROJECT/API/Dora.d.ts" ] || install_api
 		build_project
-		Dora cli run -p "$PROJECT" --host "$HOST"
+		Dora cli run -p "$PROJECT" --entry "$ENTRY" --host "$HOST"
 		;;
 	run|"")
 		require_project
 		start_engine
-		if [ ! -f "$PROJECT/init.lua" ]; then
+		if [ ! -f "$PROJECT/$ENTRY" ]; then
 			echo "Compiled runtime is missing; rebuilding the project once." >&2
 			start_compiler
 			[ -f "$PROJECT/API/Dora.d.ts" ] || install_api
 			build_project
 		fi
-		Dora cli run -p "$PROJECT" --host "$HOST"
+		Dora cli run -p "$PROJECT" --entry "$ENTRY" --host "$HOST"
 		echo "Dora project is running: $PROJECT"
 		;;
 	status)
