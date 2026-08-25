@@ -1,0 +1,11 @@
+{
+  "name": "darkosre-r36",
+  "mac": "0c:c6:55:1a:74:7e",
+  "user": "ark",
+  "ssh_port": 22,
+  "identity_file": "~/.ssh/id_ed25519_zhangji",
+  "host_key_alias": "zhangji-handheld",
+  "scan_timeout_ms": 180,
+  "scan_workers": 64,
+  "max_scan_hosts": 1024
+}
