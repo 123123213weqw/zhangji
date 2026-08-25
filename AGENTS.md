@@ -53,7 +53,10 @@ python3 -m unittest discover -s tests -v
 
 ## Dora button simulation
 
-Use the repository wrapper rather than invoking compiler internals directly:
+For Dora or R36S game development, first read and follow
+`skills/dora-handheld-dev/SKILL.md`. It defines the autonomous desktop loop and
+the optional handheld handoff. Use the repository wrapper rather than invoking
+compiler internals directly:
 
 ```bash
 ./dora-lab dev

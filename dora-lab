@@ -2,7 +2,7 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-PROJECT="$ROOT/dora/ButtonLab"
+PROJECT=${DORA_PROJECT:-"$ROOT/dora/ButtonLab"}
 HOST=${DORA_HOST:-127.0.0.1}
 IDE_URL=${DORA_IDE_URL:-http://localhost:8866/}
 

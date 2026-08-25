@@ -60,6 +60,18 @@ Web IDE。Coding Agent 修改
 `emitButtonDown` / `emitButtonUp` / `emitAxis`，因此不是图片演示，而是会
 真正进入游戏输入管线的按钮模拟器。
 
+## Coding Agent 自主调试 Skill
+
+仓库内置 `skills/dora-handheld-dev/SKILL.md`。Coding Agent 会通过根目录
+`AGENTS.md` 读取它，在电脑上自动完成修改、编译、运行、读日志和修复；只有
+本机验证通过或明确要求时，才连接唯一的 R36S 做真机检查。
+
+其他 Dora 项目不必复制脚本，通过环境变量指定目录即可：
+
+```bash
+DORA_PROJECT=/absolute/path/to/game ./dora-lab dev
+```
+
 ## 配置
 
 设备配置位于 `config/handheld.json`：
