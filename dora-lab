@@ -2,20 +2,19 @@
 set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-PROJECT=${DORA_PROJECT:-"$ROOT/dora/ButtonLab"}
+PROJECT=${DORA_PROJECT:-}
 HOST=${DORA_HOST:-127.0.0.1}
 IDE_URL=${DORA_IDE_URL:-http://localhost:8866/}
 
 usage() {
 	cat <<'EOF'
-Usage: ./dora-lab [dev|keys|start|install|build|run|buildrun|status|log|stop]
+Usage: DORA_PROJECT=/absolute/project ./dora-lab [dev|start|install|build|run|buildrun|status|log|stop]
 
   dev       Rebuild TypeScript and run (for Coding Agents)
-  keys      Print the handheld adaptation test mapping
   start     Start the Dora SSR engine
-  install   Install the TypeScript API definitions for ButtonLab
-  build     Compile ButtonLab TypeScript/TSX to Lua
-  run       Run the already-built ButtonLab (default)
+  install   Install TypeScript API definitions in the selected project
+  build     Compile the selected TypeScript/TSX project to Lua
+  run       Run the already-built project (default)
   buildrun  Install definitions if needed, then build and run
   status    Show the Dora engine/Web IDE/project status
   log       Show recent Dora logs
@@ -28,6 +27,22 @@ require_dora() {
 		echo "Dora CLI was not found. Install Dora SSR 1.9.2+ and add Dora to PATH." >&2
 		exit 127
 	fi
+}
+
+require_project() {
+	if [ -z "$PROJECT" ]; then
+		if [ -f "$PWD/init.tsx" ] || [ -f "$PWD/init.ts" ] || [ -f "$PWD/init.lua" ]; then
+			PROJECT=$PWD
+		else
+			echo "Set DORA_PROJECT to the Dora project directory, or run this command inside that directory." >&2
+			exit 2
+		fi
+	fi
+	if [ ! -d "$PROJECT" ]; then
+		echo "Dora project directory does not exist: $PROJECT" >&2
+		exit 2
+	fi
+	PROJECT=$(CDPATH= cd -- "$PROJECT" && pwd)
 }
 
 open_url() {
@@ -108,54 +123,48 @@ build_project() {
 require_dora
 command=${1:-}
 case "$command" in
-	keys)
-		cat <<'EOF'
-R36S adaptation test mapping (not the desktop game's native control scheme)
-
-  D-pad       Arrow keys       Left stick   W A S D
-  A           Space or J       Right stick  T F G H
-  B           Left Shift or K  L1 / R1      Q / E
-  X / Y       U / I            L2 / R2      1 / 3
-  L3 / R3     Z / C            Select/Start Esc / Enter
-EOF
-		;;
 	dev)
+		require_project
 		start_compiler
 		[ -f "$PROJECT/API/Dora.d.ts" ] || install_api
 		build_project
 		Dora cli run -p "$PROJECT" --host "$HOST"
 		sleep 0.5
 		if Dora cli log -n 40 --host "$HOST" | grep -q "BUTTON_LAB_SELF_TEST_OK"; then
-			echo "ButtonLab is ready: keyboard, virtual pad, and controller share one input pipeline."
+			echo "Dora project is built and running: $PROJECT"
 		fi
 		;;
 	start)
 		start_engine
 		;;
 	install)
+		require_project
 		install_api
 		;;
 	build)
+		require_project
 		start_compiler
 		[ -f "$PROJECT/API/Dora.d.ts" ] || install_api
 		build_project
 		;;
 	buildrun)
+		require_project
 		start_compiler
 		[ -f "$PROJECT/API/Dora.d.ts" ] || install_api
 		build_project
 		Dora cli run -p "$PROJECT" --host "$HOST"
 		;;
 	run|"")
+		require_project
 		start_engine
 		if [ ! -f "$PROJECT/init.lua" ]; then
-			echo "ButtonLab runtime is missing; rebuilding it once." >&2
+			echo "Compiled runtime is missing; rebuilding the project once." >&2
 			start_compiler
 			[ -f "$PROJECT/API/Dora.d.ts" ] || install_api
 			build_project
 		fi
 		Dora cli run -p "$PROJECT" --host "$HOST"
-		echo "ButtonLab is ready. Run ./dora-lab keys to see keyboard shortcuts."
+		echo "Dora project is running: $PROJECT"
 		;;
 	status)
 		Dora cli status --host "$HOST"

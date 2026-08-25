@@ -4,6 +4,3 @@ __pycache__/
 .DS_Store
 .env
 .env.*
-
-# Dora SSR local SDK definitions and TypeScript build products.
-dora/ButtonLab/API/

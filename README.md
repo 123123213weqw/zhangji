@@ -1,127 +1,108 @@
-# 掌机 Coding Agent Wi-Fi Bridge
+# R36S Dora AI Development Bridge
 
-这是一个面向 Coding Agent 的零依赖连接仓库。Agent 打开仓库后会根据
-`AGENTS.md` 自动使用统一入口发现并操作掌机，不需要记忆 DHCP 地址。
+AI-first repository for developing a native desktop Dora SSR game and adapting
+the finished game to an R36S handheld. It contains no sample game and does not
+force handheld controls during desktop development.
 
-## 工作方式
+## AI coding agent: read this first
 
-1. 读取 Mac 或 Linux 当前默认网络。
-2. 根据掌机 MAC 地址扫描邻居表，IP 改变后仍能识别同一设备。
-3. 使用仓库外的专用 SSH 密钥连接。
-4. 为 Coding Agent 提供稳定、可审计的发现、执行和文件传输接口。
+1. Read `skills/dora-handheld-dev/SKILL.md`.
+2. Use the user's Dora project, or locate a directory containing `init.tsx`,
+   `init.ts`, or `init.lua`.
+3. Finish and debug the native computer version first. Preserve its keyboard,
+   mouse, window, and desktop UI behavior.
+4. Build and run autonomously:
 
-仓库不保存密码或私钥。
+   ```bash
+   DORA_PROJECT=/absolute/path/to/project ./dora-lab dev
+   ./dora-lab log
+   ```
 
-## 快速使用
+5. Only after the desktop version works, read
+   `skills/dora-handheld-dev/references/desktop-to-handheld-input.md` and add a
+   separate R36S input/UI profile.
+6. Connect the physical handheld only when requested or when the local handheld
+   profile is ready. Discover it through `./handheld`; never hard-code its DHCP
+   address.
+
+Ordinary compile and runtime errors should be diagnosed from Dora output and
+fixed without asking the user to operate the engine manually.
+
+## Workflow
+
+```text
+native desktop game
+        ↓
+desktop autonomous build/run/log loop
+        ↓
+isolated handheld input + 640x480 UI profile
+        ↓
+R36S Wi-Fi verification
+```
+
+The adaptation keeps desktop and handheld input providers separate while game
+state, rules, scenes, and assets remain shared.
+
+## Commands
+
+### Dora desktop development
 
 ```bash
-# 查看掌机 IP
-./handheld discover
+DORA_PROJECT=/absolute/path/to/project ./dora-lab dev
+DORA_PROJECT=/absolute/path/to/project ./dora-lab build
+DORA_PROJECT=/absolute/path/to/project ./dora-lab run
+./dora-lab status
+./dora-lab log
+./dora-lab stop
+```
 
-# Agent 友好的结构化状态
+When the current directory is itself a Dora project, `DORA_PROJECT` may be
+omitted.
+
+### R36S discovery and transfer
+
+```bash
 ./handheld status --json
-
-# 执行命令
 ./handheld exec -- uname -a
-./handheld exec -- df -h
-
-# 打开终端
-./handheld shell
-
-# 文件传输
-./handheld push ./example.txt /home/ark/example.txt
-./handheld pull /home/ark/example.txt ./example.downloaded.txt
+./handheld push -r ./local-project /home/ark/project
+./handheld pull /remote/log.txt ./log.txt
 ```
 
-## Coding Agent 接入
+The wrapper discovers the device by the MAC stored in `config/handheld.json`.
+SSH keys remain outside the repository.
 
-无需安装全局 Skill。将 Coding Agent 的工作目录设为本仓库即可：根目录的
-`AGENTS.md` 会要求 Agent 先运行 `./handheld status --json`，再通过统一 CLI
-操作掌机。
+## Codex Skill
 
-## Dora 掌机按钮模拟
+The repository's reusable Skill is `skills/dora-handheld-dev/`. A cloned
+repository is automatically routed to it by `AGENTS.md`.
 
-仓库包含一个 `640x480` 的 Dora SSR 按钮实验环境。它把三种输入统一为
-同一组游戏 Action：电脑键盘、屏幕虚拟手柄、R36S 物理按键。
-
-```bash
-./dora-lab
-```
-
-这一条命令会自动启动 Dora，直接运行仓库内已经构建好的模拟器，不需要打开
-Web IDE。Coding Agent 修改
-源码后使用 `./dora-lab dev` 自动重新编译。需要排错时再使用
-`./dora-lab status` 或 `./dora-lab log`。
-
-无需鼠标逐个点击：运行 `./dora-lab keys` 可以随时查看键盘映射，键盘、
-屏幕按钮和真实手柄可以同时使用。
-
-实现位于 `dora/ButtonLab/`。虚拟按钮直接调用 Dora `InputManager` 的
-`emitButtonDown` / `emitButtonUp` / `emitAxis`，因此不是图片演示，而是会
-真正进入游戏输入管线的按钮模拟器。
-
-## Coding Agent 自主调试 Skill
-
-仓库内置 `skills/dora-handheld-dev/SKILL.md`。Coding Agent 会通过根目录
-`AGENTS.md` 读取它：先按原生电脑游戏方式完成键盘、鼠标、窗口和玩法开发，
-再单独增加 R36S 输入与 640×480 UI 适配。只有电脑版本验证通过或明确要求
-时，才进入掌机适配和真机检查。
-
-也可以把它安装成 Codex 的正式 Skill。在 Codex 中输入：
+It can also be installed into Codex explicitly:
 
 ```text
 $skill-installer install https://github.com/123123213weqw/zhangji/tree/main/skills/dora-handheld-dev
 ```
 
-下一次任务即可直接调用：
+Then invoke it with:
 
 ```text
-$dora-handheld-dev 先完成这个游戏的原生电脑版本，完成后再适配 R36S
+$dora-handheld-dev Finish and debug the native desktop Dora game first, then adapt it to R36S.
 ```
 
-其他 Dora 项目不必复制脚本，通过环境变量指定目录即可：
+## Repository structure
+
+```text
+AGENTS.md                         repository instructions for coding agents
+dora-lab                         generic Dora project build/run/log wrapper
+handheld                         stable R36S discovery/SSH/transfer entrypoint
+config/handheld.json             non-secret device identity
+tools/handheld.py                connection implementation
+tests/test_handheld.py           connection parser tests
+skills/dora-handheld-dev/        installable desktop-first adaptation Skill
+```
+
+## Verification
 
 ```bash
-DORA_PROJECT=/absolute/path/to/game ./dora-lab dev
+python3 -m unittest discover -s tests -v
+./handheld status --json
 ```
-
-## 配置
-
-设备配置位于 `config/handheld.json`：
-
-```json
-{
-  "name": "darkosre-r36",
-  "mac": "0c:c6:55:1a:74:7e",
-  "user": "ark",
-  "ssh_port": 22,
-  "identity_file": "~/.ssh/id_ed25519_zhangji"
-}
-```
-
-临时覆盖配置时可使用环境变量：
-
-```bash
-HANDHELD_IP=192.168.10.225 ./handheld status --json
-HANDHELD_NETWORK=192.168.10.0/24 ./handheld discover --scan
-HANDHELD_MAC=0c:c6:55:1a:74:7e ./handheld discover
-```
-
-## 首次准备
-
-当前机器已经完成以下配置：
-
-- 专用密钥：`~/.ssh/id_ed25519_zhangji`
-- 掌机已安装对应公钥
-- 掌机 SSH 已设为开机启动
-
-在新电脑接入此仓库时，需要生成新的 SSH 密钥并将公钥添加到掌机的
-`/home/ark/.ssh/authorized_keys`。私钥不得加入仓库。
-
-## 故障判断
-
-- `discover` 失败：掌机不在当前 Wi-Fi、未开机，或网络启用了客户端隔离。
-- `ssh_open=false`：在 ArkOS 中打开 **Options -> Enable Remote Services**。
-- `ssh_authenticated=false`：检查 `identity_file` 以及远端
-  `authorized_keys`。
-- 首次主动扫描通常需要数秒；命中邻居缓存时会立即返回。

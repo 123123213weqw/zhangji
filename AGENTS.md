@@ -51,7 +51,7 @@ python3 -m unittest discover -s tests -v
 ./handheld exec -- uname -a
 ```
 
-## Dora button simulation
+## Dora game development
 
 For Dora or R36S game development, first read and follow
 `skills/dora-handheld-dev/SKILL.md`. It defines the autonomous desktop loop and
@@ -59,11 +59,10 @@ the optional handheld handoff. Use the repository wrapper rather than invoking
 compiler internals directly:
 
 ```bash
-./dora-lab dev
+DORA_PROJECT=/absolute/path/to/project ./dora-lab dev
 ```
 
-Users run the prebuilt simulator with `./dora-lab`; no Web IDE is required for
-that path. The `dev` command automatically starts Dora, connects its compiler,
-installs missing definitions, builds, and runs. The simulation project is `dora/ButtonLab`;
-both the on-screen `GamePad` and desktop keyboard must feed the shared
-`InputManager` actions used by the physical R36S pad.
+The `dev` command automatically starts Dora, connects its compiler, installs
+missing definitions, builds, and runs the selected project. Complete and debug
+the native desktop game first. Add the R36S input and 640x480 UI profile only in
+the later handheld adaptation pass defined by the skill.

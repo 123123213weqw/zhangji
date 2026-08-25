@@ -14,7 +14,8 @@ for ordinary coding.
 
 Work from the repository root. Use the project named by the user. Otherwise,
 locate the nearest Dora folder containing one `init.tsx`, `init.ts`, or
-`init.lua`; fall back to `dora/ButtonLab`.
+`init.lua`. If none exists, create a normal desktop Dora project for the user's
+game instead of starting from a handheld simulator.
 
 Pass a non-default project to the wrapper with an absolute path:
 
