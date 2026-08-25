@@ -63,8 +63,9 @@ Web IDE。Coding Agent 修改
 ## Coding Agent 自主调试 Skill
 
 仓库内置 `skills/dora-handheld-dev/SKILL.md`。Coding Agent 会通过根目录
-`AGENTS.md` 读取它，在电脑上自动完成修改、编译、运行、读日志和修复；只有
-本机验证通过或明确要求时，才连接唯一的 R36S 做真机检查。
+`AGENTS.md` 读取它：先按原生电脑游戏方式完成键盘、鼠标、窗口和玩法开发，
+再单独增加 R36S 输入与 640×480 UI 适配。只有电脑版本验证通过或明确要求
+时，才进入掌机适配和真机检查。
 
 其他 Dora 项目不必复制脚本，通过环境变量指定目录即可：
 

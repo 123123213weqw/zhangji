@@ -1,4 +1,4 @@
 interface:
   display_name: "Dora 掌机自主调试"
-  short_description: "电脑仿真开发并转移到 R36S 真机"
-  default_prompt: "Use $dora-handheld-dev to develop and autonomously debug this Dora game on desktop, then verify it on the handheld when appropriate."
+  short_description: "先完成原生电脑游戏，再适配 R36S"
+  default_prompt: "Use $dora-handheld-dev to finish and debug the native desktop Dora game first, then add and verify the R36S adaptation."

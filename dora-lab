@@ -11,7 +11,7 @@ usage() {
 Usage: ./dora-lab [dev|keys|start|install|build|run|buildrun|status|log|stop]
 
   dev       Rebuild TypeScript and run (for Coding Agents)
-  keys      Print the keyboard/controller mapping
+  keys      Print the handheld adaptation test mapping
   start     Start the Dora SSR engine
   install   Install the TypeScript API definitions for ButtonLab
   build     Compile ButtonLab TypeScript/TSX to Lua
@@ -110,7 +110,7 @@ command=${1:-}
 case "$command" in
 	keys)
 		cat <<'EOF'
-R36S / Dora keyboard mapping (keyboard and gamepad work together)
+R36S adaptation test mapping (not the desktop game's native control scheme)
 
   D-pad       Arrow keys       Left stick   W A S D
   A           Space or J       Right stick  T F G H
