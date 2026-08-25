@@ -53,6 +53,9 @@ Web IDE。Coding Agent 修改
 源码后使用 `./dora-lab dev` 自动重新编译。需要排错时再使用
 `./dora-lab status` 或 `./dora-lab log`。
 
+无需鼠标逐个点击：运行 `./dora-lab keys` 可以随时查看键盘映射，键盘、
+屏幕按钮和真实手柄可以同时使用。
+
 实现位于 `dora/ButtonLab/`。虚拟按钮直接调用 Dora `InputManager` 的
 `emitButtonDown` / `emitButtonUp` / `emitAxis`，因此不是图片演示，而是会
 真正进入游戏输入管线的按钮模拟器。

@@ -24,8 +24,16 @@ export const inputManager = CreateManager({
 			{ key: KeyName.Right },
 			{ button: ButtonName.Right },
 		]),
-		A: Trigger.Down([{ key: KeyName.J }, { button: ButtonName.A }]),
-		B: Trigger.Down([{ key: KeyName.K }, { button: ButtonName.B }]),
+		A: Trigger.Down([
+			{ key: KeyName.J },
+			{ key: KeyName.Space },
+			{ button: ButtonName.A },
+		]),
+		B: Trigger.Down([
+			{ key: KeyName.K },
+			{ key: KeyName.LShift },
+			{ button: ButtonName.B },
+		]),
 		X: Trigger.Down([{ key: KeyName.U }, { button: ButtonName.X }]),
 		Y: Trigger.Down([{ key: KeyName.I }, { button: ButtonName.Y }]),
 		L1: Trigger.Down([
@@ -75,6 +83,18 @@ export function installKeyboardAxes(): void {
 			case KeyName.D:
 				inputManager.emitAxis(AxisName.LeftX, 1);
 				break;
+			case KeyName.T:
+				inputManager.emitAxis(AxisName.RightY, 1);
+				break;
+			case KeyName.G:
+				inputManager.emitAxis(AxisName.RightY, -1);
+				break;
+			case KeyName.F:
+				inputManager.emitAxis(AxisName.RightX, -1);
+				break;
+			case KeyName.H:
+				inputManager.emitAxis(AxisName.RightX, 1);
+				break;
 			case KeyName.Num1:
 				inputManager.emitAxis(AxisName.LeftTrigger, 1);
 				break;
@@ -93,6 +113,14 @@ export function installKeyboardAxes(): void {
 			case KeyName.A:
 			case KeyName.D:
 				inputManager.emitAxis(AxisName.LeftX, 0);
+				break;
+			case KeyName.T:
+			case KeyName.G:
+				inputManager.emitAxis(AxisName.RightY, 0);
+				break;
+			case KeyName.F:
+			case KeyName.H:
+				inputManager.emitAxis(AxisName.RightX, 0);
 				break;
 			case KeyName.Num1:
 				inputManager.emitAxis(AxisName.LeftTrigger, 0);

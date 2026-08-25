@@ -35,8 +35,8 @@ if (status) {
 
 const hints = Label("sarasa-mono-sc-regular", 13);
 if (hints) {
-	hints.text = "D-pad: arrows  ABXY: J/K/U/I  L1/R1: Q/E\n"
-		+ "Left stick: WASD  L2/R2: 1/3  Start/Select: Enter/Esc";
+	hints.text = "D-pad: arrows  Sticks: WASD / TFGH  A: Space/J  B: Shift/K\n"
+		+ "X/Y: U/I  L1/R1: Q/E  L2/R2: 1/3  Start/Select: Enter/Esc";
 	hints.y = 125;
 	hints.textWidth = 600;
 	hints.addTo(Director.ui);
@@ -92,8 +92,8 @@ toNode(
 // Deterministic smoke test: the same injection API is used by GamePad touches.
 inputManager.emitButtonDown(ButtonName.A);
 inputManager.emitButtonUp(ButtonName.A);
-inputManager.emitKeyDown(KeyName.J);
-inputManager.emitKeyUp(KeyName.J);
+inputManager.emitKeyDown(KeyName.Space);
+inputManager.emitKeyUp(KeyName.Space);
 inputManager.emitAxis(AxisName.LeftX, 0.5);
 inputManager.emitAxis(AxisName.LeftX, 0);
 print("BUTTON_LAB_SELF_TEST_OK");

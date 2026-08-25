@@ -33,7 +33,7 @@ if status then -- 29
 end -- 33
 local hints = Label("sarasa-mono-sc-regular", 13) -- 36
 if hints then -- 36
-	hints.text = "D-pad: arrows  ABXY: J/K/U/I  L1/R1: Q/E\n" .. "Left stick: WASD  L2/R2: 1/3  Start/Select: Enter/Esc" -- 38
+	hints.text = "D-pad: arrows  Sticks: WASD / TFGH  A: Space/J  B: Shift/K\n" .. "X/Y: U/I  L1/R1: Q/E  L2/R2: 1/3  Start/Select: Enter/Esc" -- 38
 	hints.y = 125 -- 40
 	hints.textWidth = 600 -- 41
 	hints:addTo(Director.ui) -- 42
@@ -95,8 +95,8 @@ if ____opt_0 ~= nil then -- 81
 end -- 83
 inputManager:emitButtonDown("a") -- 93
 inputManager:emitButtonUp("a") -- 94
-inputManager:emitKeyDown("J") -- 95
-inputManager:emitKeyUp("J") -- 96
+inputManager:emitKeyDown("Space") -- 95
+inputManager:emitKeyUp("Space") -- 96
 inputManager:emitAxis("leftx", 0.5) -- 97
 inputManager:emitAxis("leftx", 0) -- 98
 print("BUTTON_LAB_SELF_TEST_OK") -- 99

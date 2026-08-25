@@ -46,9 +46,12 @@ The window uses the handheld's logical `640x480` resolution on desktop. Verify:
 | Handheld input | Keyboard |
 | --- | --- |
 | D-pad | Arrow keys |
-| A / B / X / Y | J / K / U / I |
+| A | Space or J |
+| B | Left Shift or K |
+| X / Y | U / I |
 | L1 / R1 | Q / E |
 | Left stick | W / A / S / D |
+| Right stick | T / F / G / H |
 | L2 / R2 | 1 / 3 |
 | L3 / R3 | Z / C |
 | Select / Start | Escape / Enter |
